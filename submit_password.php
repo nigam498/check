@@ -10,12 +10,12 @@ use Google\Spreadsheet\ServiceRequestFactory;
 use Google\Spreadsheet\CellEntry;
 
 // गूगल एक्सेल शीट के साथ एक संग्रहण तैयार करें
-$serviceRequest = new DefaultServiceRequest('your-client-id', 'your-client-secret');
+$serviceRequest = new DefaultServiceRequest('115315046359667344244', '257429cdbabeb6b359ce1216811cc11d7eb24e58');
 ServiceRequestFactory::setInstance($serviceRequest);
 
 // गूगल एक्सेल शीट के लिए वर्कबुक और वर्कशीट का चयन करें
 $spreadsheetService = new Google\Spreadsheet\SpreadsheetService();
-$spreadsheet = $spreadsheetService->getSpreadsheetById('your-spreadsheet-id');
+$spreadsheet = $spreadsheetService->getSpreadsheetById('https://docs.google.com/spreadsheets/d/1Bx75uwWUQ1y46gwhAm9jNywdVQ21YmnDij5y6fhPHKA/edit#gid=0');
 $worksheetFeed = $spreadsheet->getWorksheets();
 $worksheet = $worksheetFeed->getByTitle('Sheet1'); // अपनी वर्कशीट का नाम यहां दर्ज करें
 

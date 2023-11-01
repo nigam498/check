@@ -1,10 +1,129 @@
 <!DOCTYPE html>
-<html>
-  <body>
-    <form action="submit_password.php" method="post">
-      <label for="password">पासवर्ड:</label>
-      <input type="password" name="password" id="password">
-      <input type="submit" value="लॉगिन करें">
-    </form>
-  </body>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f2f2f2;
+        }
+
+        .login-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .door {
+            width: 300px;
+            height: 400px;
+            position: relative;
+            perspective: 1000px;
+            transition: transform 1s;
+        }
+
+        .door-frame {
+            width: 100%;
+            height: 100%;
+            background-color: #824c33;
+            transform-origin: left center;
+            transform-style: preserve-3d;
+            transform: rotateY(0deg);
+        }
+
+        .door-knob {
+            width: 20px;
+            height: 20px;
+            background-color: #000;
+            border-radius: 50%;
+            position: absolute;
+            right: 10px;
+            top: calc(50% - 10px);
+        }
+
+        .door-inside {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            background-color: white;
+            transform-origin: left center;
+            transform-style: preserve-3d;
+            transform: rotateY(0deg);
+            display: none;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .login-form {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        h2 {
+            font-size: 24px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+        }
+
+        button {
+            background-color: #824c33;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="door" id="door">
+            <div class="door-frame">
+                <div class="door-knob"></div>
+            </div>
+            <div class="door-inside" id="door-inside">
+                <iframe src="" id="iframe"></iframe>
+            </div>
+        </div>
+        <div class="login-form">
+            <h2>Login</h2>
+            <form id="login-form" onsubmit="return validateForm()">
+                <input type="text" id="username" placeholder="User ID">
+                <input type="password" id="password" placeholder="Password">
+                <button type="submit">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function validateForm() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const door = document.getElementById('door');
+            const doorInside = document.getElementById('door-inside');
+            const iframe = document.getElementById('iframe');
+
+            if (username === '123' && password === '1234') {
+                door.style.transform = 'rotateY(100deg)';
+                doorInside.style.display = 'block';
+                iframe.src = 'https://www.google.com';
+            }
+
+            return false; // Prevent form submission
+        }
+    </script>
+</body>
 </html>

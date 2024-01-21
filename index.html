@@ -80,12 +80,12 @@
 
             // Update the graph using Plotly
             Plotly.newPlot('odds-graph', [
-                { x: dataPoints.map(point => point.time), y: dataPoints.map(point => point.oddsTeamA), type: 'scatter', name: 'Team A' },
-                { x: dataPoints.map(point => point.time), y: dataPoints.map(point => point.oddsTeamB), type: 'scatter', name: 'Team B' },
+                { x: dataPoints.map(point => point.time), y: dataPoints.map(point => point.oddsTeamA), type: 'line', name: 'Team A' },
+                { x: dataPoints.map(point => point.time), y: dataPoints.map(point => point.oddsTeamB), type: 'line', name: 'Team B' },
             ], {
                 xaxis: { title: 'Time' },
                 yaxis: { title: 'Odds' },
-                title: 'Odds Graph'
+                title: 'Odds Line Chart'
             });
         }
 

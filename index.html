@@ -3,127 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Odds Graph App</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <style>
         body {
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #f2f2f2;
+            padding: 20px;
         }
 
-        .login-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .door {
-            width: 300px;
-            height: 400px;
-            position: relative;
-            perspective: 1000px;
-            transition: transform 1s;
-        }
-
-        .door-frame {
-            width: 100%;
-            height: 100%;
-            background-color: #824c33;
-            transform-origin: left center;
-            transform-style: preserve-3d;
-            transform: rotateY(0deg);
-        }
-
-        .door-knob {
-            width: 20px;
-            height: 20px;
-            background-color: #000;
-            border-radius: 50%;
-            position: absolute;
-            right: 10px;
-            top: calc(50% - 10px);
-        }
-
-        .door-inside {
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            background-color: white;
-            transform-origin: left center;
-            transform-style: preserve-3d;
-            transform: rotateY(0deg);
-            display: none;
-        }
-
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-
-        .login-form {
-            text-align: center;
+        #canvas-container {
             margin-top: 20px;
         }
 
-        h2 {
-            font-size: 24px;
-        }
-
-        input {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-        }
-
-        button {
-            background-color: #824c33;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            cursor: pointer;
+        textarea {
+            resize: none;
         }
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <div class="door" id="door">
-            <div class="door-frame">
-                <div class="door-knob"></div>
-            </div>
-            <div class="door-inside" id="door-inside">
-                <iframe src="" id="iframe"></iframe>
-            </div>
-        </div>
-        <div class="login-form">
-            <h2>Login</h2>
-            <form id="login-form" onsubmit="return validateForm()">
-                <input type="text" id="username" placeholder="User ID">
-                <input type="password" id="password" placeholder="Password">
-                <button type="submit">Login</button>
-            </form>
-        </div>
+
+<div class="container">
+    <h2 class="text-center">Odds Graph App</h2>
+
+    <div class="form-group">
+        <label for="oddsTeamA">Odds Team A:</label>
+        <input type="text" class="form-control" id="oddsTeamA">
     </div>
 
-    <script>
-        function validateForm() {
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            const door = document.getElementById('door');
-            const doorInside = document.getElementById('door-inside');
-            const iframe = document.getElementById('iframe');
+    <div class="form-group">
+        <label for="oddsTeamB">Odds Team B:</label>
+        <input type="text" class="form-control" id="oddsTeamB">
+    </div>
 
-            if (username === '123' && password === '1234') {
-                door.style.transform = 'rotateY(100deg)';
-                doorInside.style.display = 'block';
-                iframe.src = 'https://www.google.com';
+    <button class="btn btn-primary" onclick="updateGraph()">Update Graph</button>
+    <button class="btn btn-secondary" onclick="refreshGraph()">Refresh Graph</button>
+
+    <div id="canvas-container">
+        <canvas id="oddsCanvas" width="400" height="300"></canvas>
+    </div>
+
+    <textarea class="form-control mt-3" rows="5" id="detailsText" readonly></textarea>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+<script>
+    let times = [];
+    let oddsTeamA = [];
+    let oddsTeamB = [];
+    
+    function updateGraph() {
+        try {
+            let oddsA = parseFloat(document.getElementById('oddsTeamA').value);
+            let oddsB = parseFloat(document.getElementById('oddsTeamB').value);
+
+            if (isNaN(oddsA) || isNaN(oddsB)) {
+                throw new Error("Invalid input. Please enter valid numeric odds.");
             }
 
-            return false; // Prevent form submission
+            let timeNow = new Date();
+            times.push(timeNow);
+            oddsTeamA.push(oddsA);
+            oddsTeamB.push(oddsB);
+
+            // Display added details in the textarea
+            let details = `Time: ${timeNow}, Team A Odds: ${oddsA}, Team B Odds: ${oddsB}\n`;
+            document.getElementById('detailsText').value += details;
+
+            // Plot graph using Plotly
+            Plotly.newPlot('oddsCanvas', [
+                { x: times, y: oddsTeamA, type: 'scatter', mode: 'lines+markers', name: 'Team A' },
+                { x: times, y: oddsTeamB, type: 'scatter', mode: 'lines+markers', name: 'Team B' }
+            ]);
+
+        } catch (error) {
+            alert("Error: " + error.message);
         }
-    </script>
+    }
+
+    function refreshGraph() {
+        times = [];
+        oddsTeamA = [];
+        oddsTeamB = [];
+        document.getElementById('detailsText').value = ""; // Clear the details text
+        Plotly.newPlot('oddsCanvas', []); // Clear the canvas
+    }
+</script>
+
 </body>
 </html>

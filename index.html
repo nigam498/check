@@ -83,9 +83,9 @@
             // Customize your graph drawing logic here
             // Example: Draw oddsTeamA and oddsTeamB on the canvas
             for (let i = 0; i < times.length; i++) {
-                const x = /* Calculate x-coordinate based on time */;
-                const yA = /* Calculate y-coordinate for oddsTeamA */;
-                const yB = /* Calculate y-coordinate for oddsTeamB */;
+                const x = i * 50; // Adjust x-coordinate based on the index
+                const yA = canvas.height - oddsTeamA[i] * 50; // Adjust y-coordinate for oddsTeamA
+                const yB = canvas.height - oddsTeamB[i] * 50; // Adjust y-coordinate for oddsTeamB
 
                 // Draw circles for markers
                 ctx.beginPath();

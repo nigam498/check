@@ -75,8 +75,48 @@
             // Plot graph using Plotly
             Plotly.newPlot('oddsCanvas', [
                 { x: times, y: oddsTeamA, type: 'scatter', mode: 'lines+markers', name: 'Team A' },
-                { x: times, y: oddsTeamB, type: 'scatter', mode: 'lines+markers', name: 'Team B' }
+                { x: times, y: oddsTeamB, type: 'scatter', mode: 'lines+markers', name: 'Team B' },
+                { x: times, y: Array(times.length).fill(oddsA), type: 'scatter', mode: 'lines', name: 'Equal Odds', line: { dash: 'dash' } }
             ]);
+
+            // Add markers for odds drops
+            Plotly.update('oddsCanvas', {
+                'marker': { size: 8 },
+                'marker.color': ['red', 'blue'],
+                'marker.symbol': ['circle', 'circle'],
+            }, [times.length - 1, times.length - 1], [0, 1]);
+
+            // Add annotations for potential winning situations
+            if (oddsA < 1) {
+                Plotly.relayout('oddsCanvas', {
+                    'annotations[0]': {
+                        'x': timeNow,
+                        'y': oddsA,
+                        'xref': 'x',
+                        'yref': 'y',
+                        'text': 'Potential Winning for Team A',
+                        'showarrow': true,
+                        'arrowhead': 4,
+                        'ax': 0,
+                        'ay': -40
+                    }
+                });
+            }
+            if (oddsB < 1) {
+                Plotly.relayout('oddsCanvas', {
+                    'annotations[1]': {
+                        'x': timeNow,
+                        'y': oddsB,
+                        'xref': 'x',
+                        'yref': 'y',
+                        'text': 'Potential Winning for Team B',
+                        'showarrow': true,
+                        'arrowhead': 4,
+                        'ax': 0,
+                        'ay': -40
+                    }
+                });
+            }
 
         } catch (error) {
             alert("Error: " + error.message);

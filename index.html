@@ -72,10 +72,34 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             // Draw your graph using ctx
+            drawGraph();
 
             // Update details text
             const detailsText = `Time: ${timeNow}, Team A Odds: ${oddsA}, Team B Odds: ${oddsB}<br>`;
             document.getElementById('details-text').innerHTML += detailsText;
+        }
+
+        function drawGraph() {
+            // Customize your graph drawing logic here
+            // Example: Draw oddsTeamA and oddsTeamB on the canvas
+            for (let i = 0; i < times.length; i++) {
+                const x = /* Calculate x-coordinate based on time */;
+                const yA = /* Calculate y-coordinate for oddsTeamA */;
+                const yB = /* Calculate y-coordinate for oddsTeamB */;
+
+                // Draw lines or other elements as needed
+                ctx.beginPath();
+                ctx.arc(x, yA, 8, 0, 2 * Math.PI);
+                ctx.fillStyle = 'red'; // Customize marker color for Team A
+                ctx.fill();
+                ctx.closePath();
+
+                ctx.beginPath();
+                ctx.arc(x, yB, 8, 0, 2 * Math.PI);
+                ctx.fillStyle = 'blue'; // Customize marker color for Team B
+                ctx.fill();
+                ctx.closePath();
+            }
         }
 
         function refreshGraph() {

@@ -3,113 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body {
-            padding: 20px;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
+
         #graph-container {
-            position: relative;
+            margin-top: 20px;
         }
-        canvas {
-            border: 1px solid #ccc;
+
+        #inputs-container {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
-        #details-text {
-            height: 200px;
-            overflow-y: scroll;
+
+        #details-container {
+            margin-top: 20px;
+        }
+
+        #details {
+            resize: none;
         }
     </style>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <title>Odds Graph App</title>
 </head>
 <body>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-6">
-                <div id="graph-container">
-                    <canvas id="odds-graph" width="600" height="400"></canvas>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <label for="odds-team-a">Odds Team A:</label>
-                <input type="text" id="odds-team-a" class="form-control" />
-                
-                <label for="odds-team-b">Odds Team B:</label>
-                <input type="text" id="odds-team-b" class="form-control" />
-
-                <button class="btn btn-primary mt-3" onclick="updateGraph()">Update Graph</button>
-                <button class="btn btn-secondary mt-3" onclick="refreshGraph()">Refresh Graph</button>
-
-                <div id="details-text" class="mt-3"></div>
-            </div>
-        </div>
+    <div id="graph-container">
+        <div id="odds-graph"></div>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <div id="inputs-container">
+        <label for="teamAOdds">Odds Team A:</label>
+        <input type="text" id="teamAOdds">
+
+        <label for="teamBOdds">Odds Team B:</label>
+        <input type="text" id="teamBOdds">
+
+        <button onclick="updateGraph()">Update Graph</button>
+        <button onclick="refreshGraph()">Refresh Graph</button>
+    </div>
+
+    <div id="details-container">
+        <textarea id="details" rows="10" cols="40" readonly></textarea>
+    </div>
+
     <script>
-        const canvas = document.getElementById('odds-graph');
-        const ctx = canvas.getContext('2d');
-        let times = [];
-        let oddsTeamA = [];
-        let oddsTeamB = [];
+        let dataPoints = [];
 
         function updateGraph() {
-            const oddsA = parseFloat(document.getElementById('odds-team-a').value);
-            const oddsB = parseFloat(document.getElementById('odds-team-b').value);
+            const oddsTeamAInput = parseFloat(document.getElementById("teamAOdds").value);
+            const oddsTeamBInput = parseFloat(document.getElementById("teamBOdds").value);
 
-            if (isNaN(oddsA) || isNaN(oddsB)) {
+            if (isNaN(oddsTeamAInput) || isNaN(oddsTeamBInput)) {
                 alert("Invalid input. Please enter valid numeric odds.");
                 return;
             }
 
             const timeNow = new Date();
-            times.push(timeNow);
-            oddsTeamA.push(oddsA);
-            oddsTeamB.push(oddsB);
+            const detailsTextArea = document.getElementById("details");
+            detailsTextArea.value += `Time: ${timeNow}, Team A Odds: ${oddsTeamAInput}, Team B Odds: ${oddsTeamBInput}\n`;
 
-            // Clear canvas
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            // Add data points to the array
+            dataPoints.push({
+                time: timeNow,
+                oddsTeamA: oddsTeamAInput,
+                oddsTeamB: oddsTeamBInput
+            });
 
-            // Draw your graph using ctx
-            drawGraph();
-
-            // Update details text
-            const detailsText = `Time: ${timeNow}, Team A Odds: ${oddsA}, Team B Odds: ${oddsB}<br>`;
-            document.getElementById('details-text').innerHTML += detailsText;
-        }
-
-        function drawGraph() {
-            // Customize your graph drawing logic here
-            // Example: Draw oddsTeamA and oddsTeamB on the canvas
-            for (let i = 0; i < times.length; i++) {
-                const x = i * 50; // Adjust x-coordinate based on the index
-                const yA = canvas.height - oddsTeamA[i] * 50; // Adjust y-coordinate for oddsTeamA
-                const yB = canvas.height - oddsTeamB[i] * 50; // Adjust y-coordinate for oddsTeamB
-
-                // Draw circles for markers
-                ctx.beginPath();
-                ctx.arc(x, yA, 8, 0, 2 * Math.PI);
-                ctx.fillStyle = 'red'; // Customize marker color for Team A
-                ctx.fill();
-                ctx.closePath();
-
-                ctx.beginPath();
-                ctx.arc(x, yB, 8, 0, 2 * Math.PI);
-                ctx.fillStyle = 'blue'; // Customize marker color for Team B
-                ctx.fill();
-                ctx.closePath();
-            }
+            // Update the graph using Plotly
+            Plotly.newPlot('odds-graph', [
+                { x: dataPoints.map(point => point.time), y: dataPoints.map(point => point.oddsTeamA), type: 'scatter', name: 'Team A' },
+                { x: dataPoints.map(point => point.time), y: dataPoints.map(point => point.oddsTeamB), type: 'scatter', name: 'Team B' },
+            ], {
+                xaxis: { title: 'Time' },
+                yaxis: { title: 'Odds' },
+                title: 'Odds Graph'
+            });
         }
 
         function refreshGraph() {
-            times = [];
-            oddsTeamA = [];
-            oddsTeamB = [];
-            document.getElementById('details-text').innerHTML = '';
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            // Draw initial graph setup
+            dataPoints = [];
+            document.getElementById("details").value = "";
+            // Refresh the graph by updating Plotly or resetting the chart container
+            document.getElementById("odds-graph").innerHTML = "";
         }
     </script>
 </body>

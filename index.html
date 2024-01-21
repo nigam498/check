@@ -3,134 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Odds Graph App</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body {
             padding: 20px;
         }
-
-        #canvas-container {
-            margin-top: 20px;
+        #graph-container {
+            position: relative;
         }
-
-        textarea {
-            resize: none;
+        canvas {
+            border: 1px solid #ccc;
+        }
+        #details-text {
+            height: 200px;
+            overflow-y: scroll;
         }
     </style>
+    <title>Odds Graph App</title>
 </head>
 <body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <div id="graph-container">
+                    <canvas id="odds-graph" width="600" height="400"></canvas>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label for="odds-team-a">Odds Team A:</label>
+                <input type="text" id="odds-team-a" class="form-control" />
+                
+                <label for="odds-team-b">Odds Team B:</label>
+                <input type="text" id="odds-team-b" class="form-control" />
 
-<div class="container">
-    <h2 class="text-center">Odds Graph App</h2>
+                <button class="btn btn-primary mt-3" onclick="updateGraph()">Update Graph</button>
+                <button class="btn btn-secondary mt-3" onclick="refreshGraph()">Refresh Graph</button>
 
-    <div class="form-group">
-        <label for="oddsTeamA">Odds Team A:</label>
-        <input type="text" class="form-control" id="oddsTeamA">
+                <div id="details-text" class="mt-3"></div>
+            </div>
+        </div>
     </div>
 
-    <div class="form-group">
-        <label for="oddsTeamB">Odds Team B:</label>
-        <input type="text" class="form-control" id="oddsTeamB">
-    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        const canvas = document.getElementById('odds-graph');
+        const ctx = canvas.getContext('2d');
+        let times = [];
+        let oddsTeamA = [];
+        let oddsTeamB = [];
 
-    <button class="btn btn-primary" onclick="updateGraph()">Update Graph</button>
-    <button class="btn btn-secondary" onclick="refreshGraph()">Refresh Graph</button>
-
-    <div id="canvas-container">
-        <canvas id="oddsCanvas" width="400" height="300"></canvas>
-    </div>
-
-    <textarea class="form-control mt-3" rows="5" id="detailsText" readonly></textarea>
-</div>
-
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-
-<script>
-    let times = [];
-    let oddsTeamA = [];
-    let oddsTeamB = [];
-    
-    function updateGraph() {
-        try {
-            let oddsA = parseFloat(document.getElementById('oddsTeamA').value);
-            let oddsB = parseFloat(document.getElementById('oddsTeamB').value);
+        function updateGraph() {
+            const oddsA = parseFloat(document.getElementById('odds-team-a').value);
+            const oddsB = parseFloat(document.getElementById('odds-team-b').value);
 
             if (isNaN(oddsA) || isNaN(oddsB)) {
-                throw new Error("Invalid input. Please enter valid numeric odds.");
+                alert("Invalid input. Please enter valid numeric odds.");
+                return;
             }
 
-            let timeNow = new Date();
+            const timeNow = new Date();
             times.push(timeNow);
             oddsTeamA.push(oddsA);
             oddsTeamB.push(oddsB);
 
-            // Display added details in the textarea
-            let details = `Time: ${timeNow}, Team A Odds: ${oddsA}, Team B Odds: ${oddsB}\n`;
-            document.getElementById('detailsText').value += details;
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Plot graph using Plotly
-            Plotly.newPlot('oddsCanvas', [
-                { x: times, y: oddsTeamA, type: 'scatter', mode: 'lines+markers', name: 'Team A' },
-                { x: times, y: oddsTeamB, type: 'scatter', mode: 'lines+markers', name: 'Team B' },
-                { x: times, y: Array(times.length).fill(oddsA), type: 'scatter', mode: 'lines', name: 'Equal Odds', line: { dash: 'dash' } }
-            ]);
+            // Draw your graph using ctx
 
-            // Add markers for odds drops
-            Plotly.update('oddsCanvas', {
-                'marker': { size: 8 },
-                'marker.color': ['red', 'blue'],
-                'marker.symbol': ['circle', 'circle'],
-            }, [times.length - 1, times.length - 1], [0, 1]);
-
-            // Add annotations for potential winning situations
-            if (oddsA < 1) {
-                Plotly.relayout('oddsCanvas', {
-                    'annotations[0]': {
-                        'x': timeNow,
-                        'y': oddsA,
-                        'xref': 'x',
-                        'yref': 'y',
-                        'text': 'Potential Winning for Team A',
-                        'showarrow': true,
-                        'arrowhead': 4,
-                        'ax': 0,
-                        'ay': -40
-                    }
-                });
-            }
-            if (oddsB < 1) {
-                Plotly.relayout('oddsCanvas', {
-                    'annotations[1]': {
-                        'x': timeNow,
-                        'y': oddsB,
-                        'xref': 'x',
-                        'yref': 'y',
-                        'text': 'Potential Winning for Team B',
-                        'showarrow': true,
-                        'arrowhead': 4,
-                        'ax': 0,
-                        'ay': -40
-                    }
-                });
-            }
-
-        } catch (error) {
-            alert("Error: " + error.message);
+            // Update details text
+            const detailsText = `Time: ${timeNow}, Team A Odds: ${oddsA}, Team B Odds: ${oddsB}<br>`;
+            document.getElementById('details-text').innerHTML += detailsText;
         }
-    }
 
-    function refreshGraph() {
-        times = [];
-        oddsTeamA = [];
-        oddsTeamB = [];
-        document.getElementById('detailsText').value = ""; // Clear the details text
-        Plotly.newPlot('oddsCanvas', []); // Clear the canvas
-    }
-</script>
+        function refreshGraph() {
+            times = [];
+            oddsTeamA = [];
+            oddsTeamB = [];
+            document.getElementById('details-text').innerHTML = '';
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+            // Draw initial graph setup
+        }
+    </script>
 </body>
 </html>

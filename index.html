@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -35,8 +36,9 @@
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <title>Odds Graph App</title>
 </head>
+
 <body>
-    <div id="graph-container">
+    <div id="graph-container" onresize="resizeChart()">
         <div id="odds-graph"></div>
     </div>
 
@@ -83,7 +85,7 @@
                 { x: dataPoints.map(point => point.time), y: dataPoints.map(point => point.oddsTeamA), type: 'line', name: 'Team A' },
                 { x: dataPoints.map(point => point.time), y: dataPoints.map(point => point.oddsTeamB), type: 'line', name: 'Team B' },
             ], {
-                xaxis: { title: 'Time' },
+                xaxis: { title: 'Time and Odds', tickmode: 'auto', tickvals: dataPoints.map(point => point.time), ticktext: dataPoints.map(point => `${point.time} - ${point.oddsTeamA}/${point.oddsTeamB}`) },
                 yaxis: { title: 'Odds' },
                 title: 'Odds Line Chart'
             });
@@ -95,6 +97,15 @@
             // Refresh the graph by updating Plotly or resetting the chart container
             document.getElementById("odds-graph").innerHTML = "";
         }
+
+        function resizeChart() {
+            Plotly.relayout('odds-graph', {
+                autosize: false,
+                width: document.getElementById('odds-graph').clientWidth,
+                height: document.getElementById('odds-graph').clientHeight
+            });
+        }
     </script>
 </body>
+
 </html>

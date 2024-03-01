@@ -20,7 +20,7 @@
 </head>
 <body>
     <h1>Website with Alert</h1>
-    <iframe id="myFrame" src="https://externalconnect.usaa.com/externalconnect/"></iframe>
+    <iframe id="myFrame" src="https://externalconnect.usaa.com/externalconnect/" target="_blank"></iframe>
 
     <script>
         // Function to trigger the alert
@@ -30,7 +30,10 @@
 
         // Wait for the iframe to load
         document.getElementById("myFrame").onload = function() {
-            // Trigger the alert when the iframe has finished loading
+            // Trigger the alert within the iframe
+            document.getElementById("myFrame").contentWindow.alert('Hello from JavaScript in iframe!');
+
+            // Trigger the alert in the parent window
             triggerAlert();
         };
     </script>

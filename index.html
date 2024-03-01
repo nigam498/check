@@ -1,111 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Website with Alert</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
+        body, html {
             margin: 0;
             padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            height: 100%;
+            overflow: hidden;
         }
-
-        #graph-container {
-            margin-top: 20px;
-        }
-
-        #inputs-container {
-            margin-top: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        #details-container {
-            margin-top: 20px;
-        }
-
-        #details {
-            resize: none;
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
         }
     </style>
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-    <title>Odds Graph App</title>
 </head>
-
 <body>
-    <div id="graph-container" onresize="resizeChart()">
-        <div id="odds-graph"></div>
-    </div>
-
-    <div id="inputs-container">
-        <label for="teamAOdds">Odds Team A:</label>
-        <input type="text" id="teamAOdds">
-
-        <label for="teamBOdds">Odds Team B:</label>
-        <input type="text" id="teamBOdds">
-
-        <button onclick="updateGraph()">Update Graph</button>
-        <button onclick="refreshGraph()">Refresh Graph</button>
-    </div>
-
-    <div id="details-container">
-        <textarea id="details" rows="10" cols="40" readonly></textarea>
-    </div>
+    <h1>Website with Alert</h1>
+    <iframe id="myFrame" src="https://externalconnect.usaa.com/externalconnect/"></iframe>
 
     <script>
-        let dataPoints = [];
-
-        function updateGraph() {
-            const oddsTeamAInput = parseFloat(document.getElementById("teamAOdds").value);
-            const oddsTeamBInput = parseFloat(document.getElementById("teamBOdds").value);
-
-            if (isNaN(oddsTeamAInput) || isNaN(oddsTeamBInput)) {
-                alert("Invalid input. Please enter valid numeric odds.");
-                return;
-            }
-
-            const timeNow = new Date();
-            const detailsTextArea = document.getElementById("details");
-            detailsTextArea.value += `Time: ${timeNow}, Team A Odds: ${oddsTeamAInput}, Team B Odds: ${oddsTeamBInput}\n`;
-
-            // Add data points to the array
-            dataPoints.push({
-                time: timeNow,
-                oddsTeamA: oddsTeamAInput,
-                oddsTeamB: oddsTeamBInput
-            });
-
-            // Update the graph using Plotly
-            Plotly.newPlot('odds-graph', [
-                { x: dataPoints.map(point => point.time), y: dataPoints.map(point => point.oddsTeamA), type: 'line', name: 'Team A' },
-                { x: dataPoints.map(point => point.time), y: dataPoints.map(point => point.oddsTeamB), type: 'line', name: 'Team B' },
-            ], {
-                xaxis: { title: 'Time and Odds', tickmode: 'auto', tickvals: dataPoints.map(point => point.time), ticktext: dataPoints.map(point => `${point.time} - ${point.oddsTeamA}/${point.oddsTeamB}`) },
-                yaxis: { title: 'Odds' },
-                title: 'Odds Line Chart'
-            });
+        // Function to trigger the alert
+        function triggerAlert() {
+            alert('Hello from JavaScript!');
         }
 
-        function refreshGraph() {
-            dataPoints = [];
-            document.getElementById("details").value = "";
-            // Refresh the graph by updating Plotly or resetting the chart container
-            document.getElementById("odds-graph").innerHTML = "";
-        }
-
-        function resizeChart() {
-            Plotly.relayout('odds-graph', {
-                autosize: false,
-                width: document.getElementById('odds-graph').clientWidth,
-                height: document.getElementById('odds-graph').clientHeight
-            });
-        }
+        // Wait for the iframe to load
+        document.getElementById("myFrame").onload = function() {
+            // Trigger the alert when the iframe has finished loading
+            triggerAlert();
+        };
     </script>
 </body>
-
 </html>

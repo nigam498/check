@@ -1,1 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Explore the Moon</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+    }
+    textarea, input[type="submit"] {
+        margin-bottom: 10px;
+    }
+    .comment {
+        margin-bottom: 15px;
+        border-bottom: 1px solid #ccc;
+        padding-bottom: 5px;
+    }
+</style>
+</head>
+<body>
+
+<h1>Explore the Moon</h1>
+
+<h2>Write about the Moon</h2>
+<form id="moonForm">
+    <textarea id="moonText" rows="4" cols="50" placeholder="Write about the Moon..."></textarea><br>
+    <input type="submit" value="Submit">
+</form>
+
+<h2>Comments</h2>
+<div id="comments"></div>
+
+<script>
+    // Function to display comments
+    function displayComments() {
+        var commentsDiv = document.getElementById("comments");
+        commentsDiv.innerHTML = "";
+        
+        // Retrieve comments from local storage
+        var comments = JSON.parse(localStorage.getItem("moonComments")) || [];
+        
+        // Display each comment
+        comments.forEach(function(comment) {
+            var commentElement = document.createElement("div");
+            commentElement.classList.add("comment");
+            commentElement.textContent = comment;
+            commentsDiv.appendChild(commentElement);
+        });
+    }
+    
+    // Function to handle form submission
+    document.getElementById("moonForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+        
+        // Get the comment from the textarea
+        var comment = document.getElementById("moonText").value.trim();
+        
+        if (comment !== "") {
+            // Retrieve existing comments from local storage
+            var comments = JSON.parse(localStorage.getItem("moonComments")) || [];
+            
+            // Add the new comment to the array
+            comments.push(comment);
+            
+            // Save the updated comments array to local storage
+            localStorage.setItem("moonComments", JSON.stringify(comments));
+            
+            // Display comments
+            displayComments();
+            
+            // Clear the textarea
+            document.getElementById("moonText").value = "";
+        } else {
+            alert("Please write something about the Moon before submitting.");
+        }
+    });
+
+    // Display existing comments when the page loads
+    displayComments();
+</script>
+
+</body>
+</html>
 
